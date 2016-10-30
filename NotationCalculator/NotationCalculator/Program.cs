@@ -14,7 +14,7 @@ namespace NotationCalculator
 
             var calc = new NotationCalculator(10, binaryNumber1, binaryNumber2);
 
-            //Console.WriteLine(calc.GetSum());
+            Console.WriteLine(calc.GetSum());
 
             Console.WriteLine();
 

@@ -70,24 +70,26 @@ namespace NotationCalculator
                 result = new StringBuilder(result).Insert(result.Length - digitsAfterFloatingPoint, ".").ToString();
             }
             
-            return result;
+            return TrimZeros(ref result);
         }
 
         public string GetSum()
         {
-            return GetSum(_firstDigit, _secondDigit);
+            string result = GetSum(_firstDigit, _secondDigit);
+
+            return TrimZeros(ref result);
         }
 
         private string GetSum(string firstDigit, string secondDigit)
         {
-            StringBuilder result = new StringBuilder(firstDigit.Replace(".", ""));
+            StringBuilder resultStringBuilder = new StringBuilder(firstDigit.Replace(".", ""));
             secondDigit = secondDigit.Replace(".", "");
 
             int digitsAfterFloatingPoint = GetMaxDigitsAfterFloatingPoint(firstDigit, secondDigit);
 
             for (int i = secondDigit.Length - 1; i >= 0; i--)
             {
-                int currentValueFromResult = GetDecimalFromChar(result[i]),
+                int currentValueFromResult = GetDecimalFromChar(resultStringBuilder[i]),
                     currentValueFromSecondNumber = GetDecimalFromChar(secondDigit[i]),
                     nextDigitValue = 0;
 
@@ -99,24 +101,24 @@ namespace NotationCalculator
                     tmpResult = tmpResult%_notation;
                 }
 
-                result[i] = GetCharFromDecimal(tmpResult);
+                resultStringBuilder[i] = GetCharFromDecimal(tmpResult);
 
                 if (i != 0)
                 {
-                    result[i - 1] = GetCharSum(result[i - 1], GetCharFromDecimal(nextDigitValue));
+                    resultStringBuilder[i - 1] = GetCharSum(resultStringBuilder[i - 1], GetCharFromDecimal(nextDigitValue));
                 }
                 else
                 {
-                    result.Insert(0, GetCharFromDecimal(nextDigitValue));
+                    resultStringBuilder.Insert(0, GetCharFromDecimal(nextDigitValue));
                 }
             }
 
             if (digitsAfterFloatingPoint != 0)
             {
-                result.Insert(result.Length - digitsAfterFloatingPoint, ".");
+                resultStringBuilder.Insert(resultStringBuilder.Length - digitsAfterFloatingPoint, ".");
             }
 
-            return result.ToString();
+            return resultStringBuilder.ToString();
         }
 
         private void SetupDigits(ref string firstDigit, ref string secondDigit)
@@ -124,6 +126,11 @@ namespace NotationCalculator
             SetupLengthOfNumbers(ref firstDigit, ref secondDigit);
             
             SetupFloatingPoint(ref firstDigit, ref secondDigit);
+        }
+
+        private string TrimZeros(ref string number)
+        {
+            return number = number.Trim('0', ' ');
         }
 
         private void SetupLengthOfNumbers(ref string firstDigit, ref string secondDigit)

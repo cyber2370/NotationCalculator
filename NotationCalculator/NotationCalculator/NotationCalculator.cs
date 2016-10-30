@@ -22,17 +22,68 @@ namespace NotationCalculator
             _firstDigit = firstDigit.Replace(",", ".");
             _secondDigit = secondDigit.Replace(",", ".");
 
-            SetupDigits();
+            SetupDigits(ref _firstDigit, ref _secondDigit);
+        }
+
+        public string GetMultiply()
+        {
+            string result = "";
+            string firstDigit = _firstDigit.Replace(".", "");
+            string secondDigit = _secondDigit.Replace(".", "");
+
+            int digitsAfterFloatingPoint = 
+                GetDigitsAfterFloatingPoint(_firstDigit)
+              + GetDigitsAfterFloatingPoint(_secondDigit);
+
+            for (int i = secondDigit.Length - 1; i >= 0; i--)
+            {
+                int currentValueOfSecond = GetDecimalFromChar(secondDigit[i]);
+                string tempResult = "";
+                int toNextDigit = 0;
+
+                for (int j = firstDigit.Length - 1; j >= 0; j--)
+                {
+                    int currentValueOfFirst = GetDecimalFromChar(firstDigit[j]);
+
+                    int resultOfMultiple = currentValueOfFirst*currentValueOfSecond + toNextDigit;
+
+                    toNextDigit = Convert.ToInt32( (resultOfMultiple/_notation)^0 );
+                    int toCurrentDigit = resultOfMultiple - toNextDigit * _notation;
+
+                    //to current digit
+                    tempResult = GetCharFromDecimal(toCurrentDigit) + tempResult;
+                }
+
+                for (int j = 0; j < secondDigit.Length - 1 - i; j++)
+                {
+                    tempResult += "0";
+                }
+
+                SetupDigits(ref result, ref tempResult);
+
+                result = GetSum(tempResult, result);
+            }
+
+            // setting floating point
+            if (digitsAfterFloatingPoint != 0)
+            {
+                result = new StringBuilder(result).Insert(result.Length - digitsAfterFloatingPoint, ".").ToString();
+            }
+            
+            return result;
         }
 
         public string GetSum()
         {
-            StringBuilder result = new StringBuilder(_firstDigit.Replace(".", ""));
-            string secondDigit = _secondDigit.Replace(".", "");
+            return GetSum(_firstDigit, _secondDigit);
+        }
 
-            int digitsAfterFloatingPoint = GetDigitsAfterFloatingPoint();
+        private string GetSum(string firstDigit, string secondDigit)
+        {
+            StringBuilder result = new StringBuilder(firstDigit.Replace(".", ""));
+            secondDigit = secondDigit.Replace(".", "");
 
-            char flagA = ' ';
+            int digitsAfterFloatingPoint = GetMaxDigitsAfterFloatingPoint(firstDigit, secondDigit);
 
             for (int i = secondDigit.Length - 1; i >= 0; i--)
             {
@@ -40,7 +91,7 @@ namespace NotationCalculator
                     currentValueFromSecondNumber = GetDecimalFromChar(secondDigit[i]),
                     nextDigitValue = 0;
 
-                int tmpResult = currentValueFromSecondNumber + currentValueFromResult + nextDigitValue;
+                int tmpResult = currentValueFromSecondNumber + currentValueFromResult;
 
                 if (tmpResult /_notation >= 1)
                 {
@@ -56,26 +107,29 @@ namespace NotationCalculator
                 }
                 else
                 {
-                    flagA = GetCharFromDecimal(nextDigitValue);
+                    result.Insert(0, GetCharFromDecimal(nextDigitValue));
                 }
             }
 
-            result.Insert(result.Length - digitsAfterFloatingPoint, ".");
+            if (digitsAfterFloatingPoint != 0)
+            {
+                result.Insert(result.Length - digitsAfterFloatingPoint, ".");
+            }
 
-            return flagA + result.ToString();
+            return result.ToString();
         }
 
-        private void SetupDigits()
+        private void SetupDigits(ref string firstDigit, ref string secondDigit)
         {
-            SetupLengthOfNumbers();
+            SetupLengthOfNumbers(ref firstDigit, ref secondDigit);
             
-            SetupFloatingPoint();
+            SetupFloatingPoint(ref firstDigit, ref secondDigit);
         }
 
-        private void SetupLengthOfNumbers()
+        private void SetupLengthOfNumbers(ref string firstDigit, ref string secondDigit)
         {
-            string realPartOfFirst = _firstDigit.Split('.')[0];
-            string realPartOfSecond = _secondDigit.Split('.')[0];
+            string realPartOfFirst = firstDigit.Split('.')[0];
+            string realPartOfSecond = secondDigit.Split('.')[0];
 
             int difference = realPartOfFirst.Length - realPartOfSecond.Length;
 
@@ -85,19 +139,19 @@ namespace NotationCalculator
             if (difference > 0)
             {
                 for (int i = 0; i < difference; i++)
-                    _secondDigit = "0" + _secondDigit;
+                    secondDigit = "0" + secondDigit;
             }
             else
             {
                 for (int i = 0; i < -difference; i++)
-                    _firstDigit = "0" + _firstDigit;
+                    firstDigit = "0" + firstDigit;
             }
         }
 
-        private void SetupFloatingPoint()
+        private void SetupFloatingPoint(ref string firstDigit, ref string secondDigit)
         {
-            string[] splittedFirstNumber = _firstDigit.Split('.');
-            string[] splittedSecondNumber = _secondDigit.Split('.');
+            string[] splittedFirstNumber = firstDigit.Split('.');
+            string[] splittedSecondNumber = secondDigit.Split('.');
 
             if (splittedFirstNumber.Length > 1 && splittedSecondNumber.Length > 1)
             {
@@ -109,7 +163,7 @@ namespace NotationCalculator
                     for (int i = 0, diff = firstNumberFloatPart.Length - secondNumberFloatPart.Length;
                         i < diff; i++)
                     {
-                        _secondDigit += "0";
+                        secondDigit += "0";
                     }
                 }
                 else
@@ -117,26 +171,26 @@ namespace NotationCalculator
                     for (int i = 0, diff = secondNumberFloatPart.Length - firstNumberFloatPart.Length;
                         i < diff; i++)
                     {
-                        _firstDigit += "0";
+                        firstDigit += "0";
                     }
                 }
             }
             else if (splittedFirstNumber.Length > 1)
             {
-                _secondDigit += ".";
+                secondDigit += ".";
 
                 for (int i = 0, length = splittedFirstNumber[1].Length; i < length; i++)
                 {
-                    _secondDigit += "0";
+                    secondDigit += "0";
                 }
             }
             else if (splittedSecondNumber.Length > 1)
             {
-                _firstDigit += ".";
+                firstDigit += ".";
 
                 for (int i = 0, length = splittedSecondNumber[1].Length; i < length; i++)
                 {
-                    _firstDigit += "0";
+                    firstDigit += "0";
                 }
             }
         }
@@ -155,6 +209,26 @@ namespace NotationCalculator
             {
                 numberOfDigitsAfterFloatingPoint2 = _secondDigit.Split('.')[1].Length;
             }
+
+            return numberOfDigitsAfterFloatingPoint1 > numberOfDigitsAfterFloatingPoint2
+                ? numberOfDigitsAfterFloatingPoint1
+                : numberOfDigitsAfterFloatingPoint2;
+        }
+
+        private int GetDigitsAfterFloatingPoint(string number)
+        {
+            if (number.Contains("."))
+            {
+                return number.Split('.')[1].Length;
+            }
+
+            return 0;
+        }
+
+        private int GetMaxDigitsAfterFloatingPoint(string firstDigit, string secondDigit)
+        {
+            int numberOfDigitsAfterFloatingPoint1 = GetDigitsAfterFloatingPoint(firstDigit),
+                numberOfDigitsAfterFloatingPoint2 = GetDigitsAfterFloatingPoint(secondDigit);
 
             return numberOfDigitsAfterFloatingPoint1 > numberOfDigitsAfterFloatingPoint2
                 ? numberOfDigitsAfterFloatingPoint1

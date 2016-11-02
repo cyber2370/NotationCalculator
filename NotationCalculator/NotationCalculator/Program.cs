@@ -10,16 +10,17 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string binaryNumber1 = "100.10", binaryNumber2 = "200.20";
+            string binaryNumber1 = "FF", binaryNumber2 = "CC";
 
-            var calc = new NotationCalculator(10, binaryNumber1, binaryNumber2);
+            var calc = new NotationCalculator(16, binaryNumber1, binaryNumber2);
 
-            Console.WriteLine(calc.GetSum());
-
+            Console.WriteLine($"Get Sum: {binaryNumber1} + {binaryNumber2} = {calc.GetSum()}");
             Console.WriteLine();
 
-            Console.WriteLine(calc.GetMultiply());
+            Console.WriteLine($"Get Multiply: {binaryNumber1} * {binaryNumber2} = {calc.GetMultiply()}");
+            Console.WriteLine();
 
+            Console.WriteLine($"Get Subtraction: {binaryNumber1} - {binaryNumber2} = {calc.GetSubtraction()}");
             Console.ReadKey();
         }
     }

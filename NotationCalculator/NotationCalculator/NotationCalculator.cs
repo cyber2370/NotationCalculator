@@ -87,16 +87,53 @@ namespace NotationCalculator
             return TrimZeros(ref result);
         }
 
-        /*private string GetSubtraction(string firstDigit, string secondDigit)
+        private string GetSubtraction(string firstDigit, string secondDigit)
         {
+            string max = GetMax(firstDigit, secondDigit);
+            bool isNegativeResult = false; 
+
+            if (max != firstDigit)
+            {
+                var tmp = firstDigit;
+                firstDigit = secondDigit;
+                secondDigit = tmp;
+
+                isNegativeResult = true;
+            }
+
             string result = "";
             string firstDigitWithoutFloatPoint = firstDigit.Replace(".", "");
             string secondDigitWithoutFloatPoint = secondDigit.Replace(".", "");
 
-            string max = GetMax(firstDigit, secondDigit);
+            int digitsAfterFloatingPoint = GetMaxDigitsAfterFloatingPoint(firstDigit, secondDigit);
 
+            bool isNextDigitOccupied = false;
+            for (int i = firstDigitWithoutFloatPoint.Length - 1; i >= 0; i--)
+            {
+                int currentDigitValue1 = GetDecimalFromChar(firstDigitWithoutFloatPoint[i]) - (isNextDigitOccupied ? 1 : 0);
+                int currentDigitValue2 = GetDecimalFromChar(secondDigitWithoutFloatPoint[i]);
 
-        }*/
+                isNextDigitOccupied = false;
+
+                if (currentDigitValue1 < currentDigitValue2)
+                {
+                    currentDigitValue1 += _notation;
+                    isNextDigitOccupied = true;
+                }
+
+                int currentDigitValueResult = currentDigitValue1 - currentDigitValue2;
+                char currentDigitCharResult = GetCharFromDecimal(currentDigitValueResult);
+
+                result = currentDigitCharResult + result;
+            }
+
+            if (digitsAfterFloatingPoint != 0)
+            {
+                result = new StringBuilder(result).Insert(result.Length - digitsAfterFloatingPoint, ".").ToString();
+            }
+
+            return isNegativeResult ? $"-{result}" : result;
+        }
 
         private string GetSum(string firstDigit, string secondDigit)
         {
@@ -204,7 +241,17 @@ namespace NotationCalculator
 
         private string TrimZeros(ref string number)
         {
-            return number = number.Trim('0', ' ');
+            string[] arr = number.Split('.');
+
+            string realPart = arr[0].TrimStart('0', ' ');
+            string fractionalPart = "";
+
+            if (arr.Length > 1)
+            {
+                fractionalPart = "." + arr[1].TrimEnd('0', ' ');
+            }
+
+            return realPart + fractionalPart;
         }
 
         private void SetupLengthOfNumbers(ref string firstDigit, ref string secondDigit)

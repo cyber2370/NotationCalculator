@@ -25,6 +25,20 @@ namespace NotationCalculator
             SetupDigits(ref _firstDigit, ref _secondDigit);
         }
 
+        public string GetSum()
+        {
+            string result = GetSum(_firstDigit, _secondDigit);
+
+            return TrimZeros(ref result);
+        }
+
+        public string GetSubtraction()
+        {
+            string result = GetSubtraction(_firstDigit, _secondDigit);
+
+            return TrimZeros(ref result);
+        }
+
         public string GetMultiply()
         {
             string result = "";
@@ -73,12 +87,16 @@ namespace NotationCalculator
             return TrimZeros(ref result);
         }
 
-        public string GetSum()
+        /*private string GetSubtraction(string firstDigit, string secondDigit)
         {
-            string result = GetSum(_firstDigit, _secondDigit);
+            string result = "";
+            string firstDigitWithoutFloatPoint = firstDigit.Replace(".", "");
+            string secondDigitWithoutFloatPoint = secondDigit.Replace(".", "");
 
-            return TrimZeros(ref result);
-        }
+            string max = GetMax(firstDigit, secondDigit);
+
+
+        }*/
 
         private string GetSum(string firstDigit, string secondDigit)
         {
@@ -119,6 +137,62 @@ namespace NotationCalculator
             }
 
             return resultStringBuilder.ToString();
+        }
+
+        private string GetMax(string firstDigit, string secondDigit)
+        {
+            TrimZeros(ref firstDigit);
+            TrimZeros(ref secondDigit);
+
+            if (firstDigit == secondDigit)
+            {
+                return firstDigit;
+            }
+
+            string[] firstArr = firstDigit.Split('.');
+            string[] secondArr = secondDigit.Split('.');
+
+            if (firstArr[0].Length > secondArr[0].Length)
+            {
+                return firstDigit;
+            }
+
+            if (firstArr[0].Length < secondArr[0].Length)
+            {
+                return secondDigit;
+            }
+
+            for (int i = 0; i < firstArr[0].Length; i++)
+            {
+                var firstCurrentCharValue = GetDecimalFromChar(firstArr[0][i]);
+                var secondCurrentCharValue = GetDecimalFromChar(secondArr[0][i]);
+
+                if (firstCurrentCharValue > secondCurrentCharValue)
+                    return firstDigit;
+
+                if (firstCurrentCharValue < secondCurrentCharValue)
+                    return secondDigit;
+            }
+
+            if (firstArr.Length > secondArr.Length)
+                return firstDigit;
+
+            if (firstArr.Length < secondArr.Length)
+                return secondDigit;
+
+            for (int i = 0; i < firstArr[1].Length && i < secondArr[1].Length; i++)
+            {
+                var firstCurrentCharValue = GetDecimalFromChar(firstArr[1][i]);
+                var secondCurrentCharValue = GetDecimalFromChar(secondArr[1][i]);
+
+                if (firstCurrentCharValue > secondCurrentCharValue)
+                    return firstDigit;
+
+                if (firstCurrentCharValue < secondCurrentCharValue)
+                    return secondDigit;
+            }
+
+            return firstArr[1].Length > secondArr[1].Length ? firstDigit : secondDigit;
         }
 
         private void SetupDigits(ref string firstDigit, ref string secondDigit)

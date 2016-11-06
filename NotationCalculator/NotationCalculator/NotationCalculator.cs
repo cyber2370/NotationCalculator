@@ -87,12 +87,82 @@ namespace NotationCalculator
             return TrimZeros(ref result);
         }
 
+        public string GetDivision()
+        {
+            string result      = "",
+                   firstDigit  = _firstDigit, 
+                   secondDigit = _secondDigit;
+                
+            SetupDigitsForDivision(ref firstDigit, ref secondDigit);
+
+            StringBuilder dividend = new StringBuilder(firstDigit);
+
+            while (dividend.Length != 0)
+            {
+                string dividendPart = "";
+                bool isDividendPartCorrect = false;
+
+                // creating dividendPart
+                while (!isDividendPartCorrect && dividend.Length != 0)
+                {
+                    dividendPart += dividend[0];
+                    dividend.Remove(0, 1);
+
+                    isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
+                }
+
+                // appending zeroes
+                while (!isDividendPartCorrect)
+                {
+                    dividendPart += "0";
+                    result += result.Contains('.') ? "0" : "0.";
+
+                    isDividendPartCorrect = Compare(dividendPart, secondDigit) == -1;
+                }
+
+                string modulo = "";
+                int toCurrentDigit = 0;
+                // TODO: rewrite when converter will be implement
+                while (Compare(dividendPart, secondDigit) != 1)
+                {
+                    toCurrentDigit++;
+                    dividendPart = GetSubtraction(dividendPart, secondDigit);
+                }
+
+                result += toCurrentDigit;
+
+                if (dividendPart != "0")
+                {
+                    dividend.Insert(0, dividendPart);
+                }
+
+                while (dividend.Length > 0 && dividend[0] == '0')
+                {
+                    result += "0";
+                    dividend.Remove(0, 1);
+                }
+
+                if (dividendPart == "0")
+                {
+                    dividend.Insert(0, dividendPart);
+                }
+
+            }
+
+            return result;
+        }
+
         private string GetSubtraction(string firstDigit, string secondDigit)
         {
-            string max = GetMax(firstDigit, secondDigit);
-            bool isNegativeResult = false; 
+            bool isNegativeResult = false;
 
-            if (max != firstDigit)
+            if (Compare(firstDigit, secondDigit) == 0)
+            {
+                return "0";
+            }
+
+            // if second number is bigger than first number
+            if (Compare(firstDigit, secondDigit) > -1)
             {
                 var tmp = firstDigit;
                 firstDigit = secondDigit;
@@ -176,14 +246,14 @@ namespace NotationCalculator
             return resultStringBuilder.ToString();
         }
 
-        private string GetMax(string firstDigit, string secondDigit)
+        private int Compare(string firstDigit, string secondDigit)
         {
             TrimZeros(ref firstDigit);
             TrimZeros(ref secondDigit);
 
             if (firstDigit == secondDigit)
             {
-                return firstDigit;
+                return 0;
             }
 
             string[] firstArr = firstDigit.Split('.');
@@ -191,12 +261,12 @@ namespace NotationCalculator
 
             if (firstArr[0].Length > secondArr[0].Length)
             {
-                return firstDigit;
+                return -1;
             }
 
             if (firstArr[0].Length < secondArr[0].Length)
             {
-                return secondDigit;
+                return 1;
             }
 
             for (int i = 0; i < firstArr[0].Length; i++)
@@ -205,17 +275,17 @@ namespace NotationCalculator
                 var secondCurrentCharValue = GetDecimalFromChar(secondArr[0][i]);
 
                 if (firstCurrentCharValue > secondCurrentCharValue)
-                    return firstDigit;
+                    return -1;
 
                 if (firstCurrentCharValue < secondCurrentCharValue)
-                    return secondDigit;
+                    return 1;
             }
 
             if (firstArr.Length > secondArr.Length)
-                return firstDigit;
+                return -1;
 
             if (firstArr.Length < secondArr.Length)
-                return secondDigit;
+                return 1;
 
             for (int i = 0; i < firstArr[1].Length && i < secondArr[1].Length; i++)
             {
@@ -223,13 +293,13 @@ namespace NotationCalculator
                 var secondCurrentCharValue = GetDecimalFromChar(secondArr[1][i]);
 
                 if (firstCurrentCharValue > secondCurrentCharValue)
-                    return firstDigit;
+                    return -1;
 
                 if (firstCurrentCharValue < secondCurrentCharValue)
-                    return secondDigit;
+                    return 1;
             }
 
-            return firstArr[1].Length > secondArr[1].Length ? firstDigit : secondDigit;
+            return firstArr[1].Length > secondArr[1].Length ? -1 : 1;
         }
 
         private void SetupDigits(ref string firstDigit, ref string secondDigit)
@@ -237,6 +307,50 @@ namespace NotationCalculator
             SetupLengthOfNumbers(ref firstDigit, ref secondDigit);
             
             SetupFloatingPoint(ref firstDigit, ref secondDigit);
+        }
+
+        private void SetupDigitsForDivision(ref string firstNumber, ref string secondNumber)
+        {
+            firstNumber = TrimZeros(ref firstNumber);
+            secondNumber = TrimZeros(ref secondNumber);
+
+            var realAndFractionalParts1 = firstNumber.Split('.');
+            var realAndFractionalParts2 = secondNumber.Split('.');
+
+            int numbersAfterFractionalPoint1 = 
+                realAndFractionalParts1.Length > 1 ? realAndFractionalParts1[1].Length : 0;
+            int numbersAfterFractionalPoint2 = 
+                realAndFractionalParts2.Length > 1 ? realAndFractionalParts2[1].Length : 0;
+
+            int differenceOfLengthesOfNumbers = 
+                numbersAfterFractionalPoint1 - numbersAfterFractionalPoint2;
+
+            if (differenceOfLengthesOfNumbers > 0)
+            {
+                firstNumber = realAndFractionalParts1[0] + realAndFractionalParts1[1];
+
+                if (realAndFractionalParts2.Length < 2)
+                    return;
+
+                secondNumber = realAndFractionalParts2[0] + realAndFractionalParts2[0];
+
+                for (int i = 0; i < differenceOfLengthesOfNumbers; i++)
+                    secondNumber += "0";
+
+            }
+            else
+            {
+                secondNumber = realAndFractionalParts2[0] 
+                    + (realAndFractionalParts2.Length > 1 ? realAndFractionalParts2[1] : "");
+
+                if (realAndFractionalParts1.Length < 2)
+                    return;
+
+                firstNumber = realAndFractionalParts1[0] + realAndFractionalParts1[0];
+
+                for (int i = 0; i > differenceOfLengthesOfNumbers; i--)
+                    firstNumber += "0";
+            }
         }
 
         private string TrimZeros(ref string number)
@@ -251,7 +365,8 @@ namespace NotationCalculator
                 fractionalPart = "." + arr[1].TrimEnd('0', ' ');
             }
 
-            return realPart + fractionalPart;
+            number = (realPart.Length > 0 ? realPart : "0") + fractionalPart;
+            return number;
         }
 
         private void SetupLengthOfNumbers(ref string firstDigit, ref string secondDigit)

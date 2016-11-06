@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NotationCalculator
 {
@@ -10,9 +6,9 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string binaryNumber1 = "FF", binaryNumber2 = "CC";
+            string binaryNumber1 = "100", binaryNumber2 = "10";
 
-            var calc = new NotationCalculator(16, binaryNumber1, binaryNumber2);
+            var calc = new NotationCalculator(10, binaryNumber1, binaryNumber2);
 
             Console.WriteLine($"Get Sum: {binaryNumber1} + {binaryNumber2} = {calc.GetSum()}");
             Console.WriteLine();
@@ -21,6 +17,9 @@ namespace NotationCalculator
             Console.WriteLine();
 
             Console.WriteLine($"Get Subtraction: {binaryNumber1} - {binaryNumber2} = {calc.GetSubtraction()}");
+            Console.WriteLine();
+
+            Console.WriteLine($"Get Division: {binaryNumber1} / {binaryNumber2} = {calc.GetDivision()}");
             Console.ReadKey();
         }
     }

@@ -131,7 +131,7 @@ namespace NotationCalculator
 
                 result += toCurrentDigit;
 
-                if (dividendPart != "0")
+                if (dividend[0] != '0' && dividendPart.TrimStart('0', ' ').TrimEnd(' ').Length != 0)
                 {
                     dividend.Insert(0, dividendPart);
                 }
@@ -140,11 +140,6 @@ namespace NotationCalculator
                 {
                     result += "0";
                     dividend.Remove(0, 1);
-                }
-
-                if (dividendPart == "0")
-                {
-                    dividend.Insert(0, dividendPart);
                 }
 
             }

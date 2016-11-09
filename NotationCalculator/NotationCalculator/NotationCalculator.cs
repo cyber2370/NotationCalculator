@@ -93,6 +93,7 @@ namespace NotationCalculator
                    firstDigit  = _firstDigit, 
                    secondDigit = _secondDigit;
 
+
             Console.WriteLine($"Start dividing {firstDigit} by {secondDigit};\n" +
                               $"----------------------------\n\n");
 
@@ -109,7 +110,13 @@ namespace NotationCalculator
                               $"{nameof(secondDigit)}: {secondDigit}\n" +
                               $"----------------------------\n\n");
 
-            StringBuilder dividend = new StringBuilder(firstDigit);
+
+            if (secondDigit.TrimStart('0') == "")
+            {
+                return "Infinity";
+            }
+
+                StringBuilder dividend = new StringBuilder(firstDigit);
             string dividendPart = "";
 
             Console.WriteLine($"----** Starting Dividing... **----\n");
@@ -148,16 +155,22 @@ namespace NotationCalculator
                 while (!isDividendPartCorrect)
                 {
                     dividendPart += "0";
-                    result += result.Contains('.') ? "0" : ".";
 
                     isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
+
+                    if (!result.Contains('.'))
+                    {
+                        result += ".";
+                    }
+                    else if (!isDividendPartCorrect)
+                    {
+                        result += "0";
+                    }
                 }
                 Console.WriteLine($"-----** (After) Continue create part of dividend **-----\n" +
                                   $"{nameof(result)}: {result};\n" +
                                   $"{nameof(dividendPart)}: {dividendPart}\n\n");
-
-
-                string modulo = "";
+                
                 int toCurrentDigit = 0;
                 Console.WriteLine($"-----** (Before) Get Modulo (dividendPart >= secondDigit) **-----\n" +
                                   $"{nameof(toCurrentDigit)}: {toCurrentDigit}\n" +
@@ -184,7 +197,7 @@ namespace NotationCalculator
                                   $"{nameof(result)}: {result}\n\n");
             }
 
-            return result;
+            return TrimZeros(ref result);
         }
 
         private string GetSubtraction(string firstDigit, string secondDigit)

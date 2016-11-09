@@ -109,7 +109,7 @@ namespace NotationCalculator
                               $"{nameof(secondDigit)}: {secondDigit}\n" +
                               $"----------------------------\n\n");*/
 
-            if (secondDigit.TrimStart('0') == "")
+            if (secondDigit.TrimStart('0') == "" || firstDigit.TrimStart('0') == "")
             {
                 return "Infinity";
             }
@@ -163,6 +163,13 @@ namespace NotationCalculator
                     else if (!isDividendPartCorrect)
                     {
                         result += "0";
+                    }
+
+                    //check for number of digits after float point
+                    var tmpArr = result.Split('.');
+                    if (tmpArr.Length > 1 && tmpArr[1].Length > 15)
+                    {
+                        return TrimZeros(ref result);
                     }
                 }
                 /*Console.WriteLine($"-----** (After) Continue create part of dividend **-----\n" +

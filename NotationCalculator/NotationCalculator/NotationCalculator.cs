@@ -96,42 +96,55 @@ namespace NotationCalculator
             Console.WriteLine($"Start dividing {firstDigit} by {secondDigit};\n" +
                               $"----------------------------\n\n");
 
+
+            Console.WriteLine($"----** (Befort) Setup Digits For Division **----\n" +
+                              $"{nameof(firstDigit)}: {firstDigit}\n" +
+                              $"{nameof(secondDigit)}: {secondDigit}\n" +
+                              $"----------------------------");
+
             SetupDigitsForDivision(ref firstDigit, ref secondDigit);
 
-            Console.WriteLine($"----** Setup Digits For Division **----\n" +
+            Console.WriteLine($"----** (After) Setup Digits For Division **----\n" +
                               $"{nameof(firstDigit)}: {firstDigit}\n" +
                               $"{nameof(secondDigit)}: {secondDigit}\n" +
                               $"----------------------------\n\n");
 
             StringBuilder dividend = new StringBuilder(firstDigit);
+            string dividendPart = "";
 
             Console.WriteLine($"----** Starting Dividing... **----\n");
 
-            while (dividend.Length != 0)
+            while (dividend.Length != 0 || dividendPart.TrimStart('0').Length != 0)
             {
                 Console.WriteLine($"----** New Iteration **----\n" +
                                   $"{nameof(result)}: {result}\n" +
                                   $"{nameof(dividend)}: {dividend}\n");
-
-                string dividendPart = "";
                 bool isDividendPartCorrect = false;
 
-                // creating dividendPart
+                Console.WriteLine($"-----** (Before) Creating Part of Dividend " +
+                                  $"{nameof(dividend)}: {dividend};\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}\n" +
+                                  $"{nameof(isDividendPartCorrect)}: {isDividendPartCorrect}");
                 while (!isDividendPartCorrect && dividend.Length != 0)
                 {
                     dividendPart += dividend[0];
                     dividend.Remove(0, 1);
 
                     isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
-                }
 
-                // -----** Creating Part of Dividend **-----
-                Console.WriteLine($"-----** Creating Part of Dividend ({nameof(dividend.Length)} == 0 or {nameof(dividendPart)} < {nameof(secondDigit)} ) **-----\n" +
+                    if (!isDividendPartCorrect)
+                    {
+                        result += "0";
+                    }
+                }
+                Console.WriteLine($"-----** (After) Creating Part of Dividend ({nameof(dividend.Length)} == 0 or {nameof(dividendPart)} < {nameof(secondDigit)} ) **-----\n" +
                                   $"{nameof(dividend)}: {dividend};\n" +
                                   $"{nameof(dividendPart)}: {dividendPart}\n" +
                                   $"{nameof(isDividendPartCorrect)}: {isDividendPartCorrect}\n\n");
 
-                // appending zeroes
+                Console.WriteLine($"-----** (Before) Continue create part of dividend **-----\n" +
+                                  $"{nameof(result)}: {result};\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}");
                 while (!isDividendPartCorrect)
                 {
                     dividendPart += "0";
@@ -139,43 +152,35 @@ namespace NotationCalculator
 
                     isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
                 }
-
-                Console.WriteLine($"-----** Continue create part of dividend **-----\n" +
+                Console.WriteLine($"-----** (After) Continue create part of dividend **-----\n" +
                                   $"{nameof(result)}: {result};\n" +
                                   $"{nameof(dividendPart)}: {dividendPart}\n\n");
 
+
                 string modulo = "";
                 int toCurrentDigit = 0;
+                Console.WriteLine($"-----** (Before) Get Modulo (dividendPart >= secondDigit) **-----\n" +
+                                  $"{nameof(toCurrentDigit)}: {toCurrentDigit}\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}");
                 // TODO: rewrite when converter will be implement
                 while (Compare(dividendPart, secondDigit) != 1)
                 {
                     toCurrentDigit++;
                     dividendPart = GetSubtraction(dividendPart, secondDigit);
                 }
-
-                Console.WriteLine($"-----** Get Modulo (dividendPart >= secondDigit) **-----\n" +
+                Console.WriteLine($"-----** (After) Get Modulo (dividendPart >= secondDigit) **-----\n" +
                                   $"{nameof(toCurrentDigit)}: {toCurrentDigit}\n" +
                                   $"{nameof(dividendPart)}: {dividendPart}\n\n");
 
+
+
+                Console.WriteLine(
+                    $"-----** (Before) Updating result **-----\n" +
+                    $"{nameof(result)}: {result}");
+
                 result += toCurrentDigit;
 
-                if ((dividend.Length > 0 && dividend[0] != '0') && dividendPart.TrimStart('0', ' ').TrimEnd(' ').Length != 0)
-                {
-                    dividend.Insert(0, dividendPart);
-                }
-
-                Console.WriteLine($"-----** Insert remained {nameof(dividendPart)} to start of {nameof(dividend)} **-----\n" +
-                                  $"{nameof(dividend)}: {dividend}\n" +
-                                  $"{nameof(dividendPart)}: {dividendPart}\n\n");
-
-                while (dividend.Length > 0 && dividend[0] == '0')
-                {
-                    result += "0";
-                    dividend.Remove(0, 1);
-                }
-
-                Console.WriteLine($"-----** Zeros from start {nameof(dividend)} to {nameof(result)} **-----\n" +
-                                  $"{nameof(dividend)}: {dividend}\n" +
+                Console.WriteLine($"-----** (After)  Updating result **-----\n" +
                                   $"{nameof(result)}: {result}\n\n");
             }
 

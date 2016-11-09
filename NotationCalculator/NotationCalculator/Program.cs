@@ -6,7 +6,7 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string binaryNumber1 = "100", binaryNumber2 = "10";
+            string binaryNumber1 = "101.10", binaryNumber2 = "10";
 
             var calc = new NotationCalculator(10, binaryNumber1, binaryNumber2);
 

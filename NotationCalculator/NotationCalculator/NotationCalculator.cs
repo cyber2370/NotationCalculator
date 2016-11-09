@@ -92,13 +92,27 @@ namespace NotationCalculator
             string result      = "",
                    firstDigit  = _firstDigit, 
                    secondDigit = _secondDigit;
-                
+
+            Console.WriteLine($"Start dividing {firstDigit} by {secondDigit};\n" +
+                              $"----------------------------\n\n");
+
             SetupDigitsForDivision(ref firstDigit, ref secondDigit);
+
+            Console.WriteLine($"----** Setup Digits For Division **----\n" +
+                              $"{nameof(firstDigit)}: {firstDigit}\n" +
+                              $"{nameof(secondDigit)}: {secondDigit}\n" +
+                              $"----------------------------\n\n");
 
             StringBuilder dividend = new StringBuilder(firstDigit);
 
+            Console.WriteLine($"----** Starting Dividing... **----\n");
+
             while (dividend.Length != 0)
             {
+                Console.WriteLine($"----** New Iteration **----\n" +
+                                  $"{nameof(result)}: {result}\n" +
+                                  $"{nameof(dividend)}: {dividend}\n");
+
                 string dividendPart = "";
                 bool isDividendPartCorrect = false;
 
@@ -111,14 +125,24 @@ namespace NotationCalculator
                     isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
                 }
 
+                // -----** Creating Part of Dividend **-----
+                Console.WriteLine($"-----** Creating Part of Dividend ({nameof(dividend.Length)} == 0 or {nameof(dividendPart)} < {nameof(secondDigit)} ) **-----\n" +
+                                  $"{nameof(dividend)}: {dividend};\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}\n" +
+                                  $"{nameof(isDividendPartCorrect)}: {isDividendPartCorrect}\n\n");
+
                 // appending zeroes
                 while (!isDividendPartCorrect)
                 {
                     dividendPart += "0";
-                    result += result.Contains('.') ? "0" : "0.";
+                    result += result.Contains('.') ? "0" : ".";
 
-                    isDividendPartCorrect = Compare(dividendPart, secondDigit) == -1;
+                    isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
                 }
+
+                Console.WriteLine($"-----** Continue create part of dividend **-----\n" +
+                                  $"{nameof(result)}: {result};\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}\n\n");
 
                 string modulo = "";
                 int toCurrentDigit = 0;
@@ -129,12 +153,20 @@ namespace NotationCalculator
                     dividendPart = GetSubtraction(dividendPart, secondDigit);
                 }
 
+                Console.WriteLine($"-----** Get Modulo (dividendPart >= secondDigit) **-----\n" +
+                                  $"{nameof(toCurrentDigit)}: {toCurrentDigit}\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}\n\n");
+
                 result += toCurrentDigit;
 
-                if (dividend[0] != '0' && dividendPart.TrimStart('0', ' ').TrimEnd(' ').Length != 0)
+                if ((dividend.Length > 0 && dividend[0] != '0') && dividendPart.TrimStart('0', ' ').TrimEnd(' ').Length != 0)
                 {
                     dividend.Insert(0, dividendPart);
                 }
+
+                Console.WriteLine($"-----** Insert remained {nameof(dividendPart)} to start of {nameof(dividend)} **-----\n" +
+                                  $"{nameof(dividend)}: {dividend}\n" +
+                                  $"{nameof(dividendPart)}: {dividendPart}\n\n");
 
                 while (dividend.Length > 0 && dividend[0] == '0')
                 {
@@ -142,6 +174,9 @@ namespace NotationCalculator
                     dividend.Remove(0, 1);
                 }
 
+                Console.WriteLine($"-----** Zeros from start {nameof(dividend)} to {nameof(result)} **-----\n" +
+                                  $"{nameof(dividend)}: {dividend}\n" +
+                                  $"{nameof(result)}: {result}\n\n");
             }
 
             return result;
@@ -150,6 +185,8 @@ namespace NotationCalculator
         private string GetSubtraction(string firstDigit, string secondDigit)
         {
             bool isNegativeResult = false;
+
+            SetupDigits(ref firstDigit, ref secondDigit);
 
             if (Compare(firstDigit, secondDigit) == 0)
             {
@@ -196,6 +233,8 @@ namespace NotationCalculator
             {
                 result = new StringBuilder(result).Insert(result.Length - digitsAfterFloatingPoint, ".").ToString();
             }
+
+            TrimZeros(ref result);
 
             return isNegativeResult ? $"-{result}" : result;
         }
@@ -309,41 +348,28 @@ namespace NotationCalculator
             firstNumber = TrimZeros(ref firstNumber);
             secondNumber = TrimZeros(ref secondNumber);
 
-            var realAndFractionalParts1 = firstNumber.Split('.');
-            var realAndFractionalParts2 = secondNumber.Split('.');
+            var realAndFractionalPartsOfFirstNumber = firstNumber.Split('.');
+            var realAndFractionalPartsOfSecondNumber = secondNumber.Split('.');
 
-            int numbersAfterFractionalPoint1 = 
-                realAndFractionalParts1.Length > 1 ? realAndFractionalParts1[1].Length : 0;
-            int numbersAfterFractionalPoint2 = 
-                realAndFractionalParts2.Length > 1 ? realAndFractionalParts2[1].Length : 0;
+            int numbersLengthAfterFractionalPointOfFirstNumber = 
+                realAndFractionalPartsOfFirstNumber.Length > 1 ? realAndFractionalPartsOfFirstNumber[1].Length : 0;
+            int numbersLengthAfterFractionalPointOfSecondNumber = 
+                realAndFractionalPartsOfSecondNumber.Length > 1 ? realAndFractionalPartsOfSecondNumber[1].Length : 0;
 
-            int differenceOfLengthesOfNumbers = 
-                numbersAfterFractionalPoint1 - numbersAfterFractionalPoint2;
+            int difference = 
+                numbersLengthAfterFractionalPointOfFirstNumber - numbersLengthAfterFractionalPointOfSecondNumber;
 
-            if (differenceOfLengthesOfNumbers > 0)
+            firstNumber = firstNumber.Replace(".", "");
+            secondNumber = secondNumber.Replace(".", "");
+
+            if (difference > 0)
             {
-                firstNumber = realAndFractionalParts1[0] + realAndFractionalParts1[1];
-
-                if (realAndFractionalParts2.Length < 2)
-                    return;
-
-                secondNumber = realAndFractionalParts2[0] + realAndFractionalParts2[0];
-
-                for (int i = 0; i < differenceOfLengthesOfNumbers; i++)
+                for (int i = 0; i < difference; i++)
                     secondNumber += "0";
-
             }
-            else
+            else if (difference < 0)
             {
-                secondNumber = realAndFractionalParts2[0] 
-                    + (realAndFractionalParts2.Length > 1 ? realAndFractionalParts2[1] : "");
-
-                if (realAndFractionalParts1.Length < 2)
-                    return;
-
-                firstNumber = realAndFractionalParts1[0] + realAndFractionalParts1[0];
-
-                for (int i = 0; i > differenceOfLengthesOfNumbers; i--)
+                for (int i = 0; i > difference; i--)
                     firstNumber += "0";
             }
         }

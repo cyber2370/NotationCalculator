@@ -194,7 +194,7 @@ namespace NotationCalculator
                     $"-----** (Before) Updating result **-----\n" +
                     $"{nameof(result)}: {result}");*/
 
-                result += toCurrentDigit;
+                result += GetCharFromDecimal(toCurrentDigit);
 
                 /*Console.WriteLine($"-----** (After)  Updating result **-----\n" +
                                   $"{nameof(result)}: {result}\n\n");*/

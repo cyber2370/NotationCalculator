@@ -154,13 +154,14 @@ namespace NotationCalculator
                 {
                     dividendPart += "0";
 
-                    isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
-
                     if (!result.Contains('.'))
                     {
                         result += ".";
                     }
-                    else if (!isDividendPartCorrect)
+
+                    isDividendPartCorrect = Compare(dividendPart, secondDigit) < 1;
+
+                    if (!isDividendPartCorrect)
                     {
                         result += "0";
                     }

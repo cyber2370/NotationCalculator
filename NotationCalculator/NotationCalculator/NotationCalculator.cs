@@ -68,6 +68,8 @@ namespace NotationCalculator
                     tempResult = GetCharFromDecimal(toCurrentDigit) + tempResult;
                 }
 
+                tempResult = toNextDigit + tempResult;
+
                 for (int j = 0; j < secondDigit.Length - 1 - i; j++)
                 {
                     tempResult += "0";

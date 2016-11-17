@@ -212,17 +212,17 @@ namespace NotationCalculator
 
             SetupDigits(ref firstDigit, ref secondDigit);
 
-            if (Compare(firstDigit, secondDigit) == 0)
+            int comparingResult = Compare(firstDigit, secondDigit);
+
+            if (comparingResult == 0)
             {
                 return "0";
             }
 
             // if second number is bigger than first number
-            if (Compare(firstDigit, secondDigit) > -1)
+            if (comparingResult > -1)
             {
-                var tmp = firstDigit;
-                firstDigit = secondDigit;
-                secondDigit = tmp;
+                SwapStrings(ref firstDigit, ref secondDigit);
 
                 isNegativeResult = true;
             }
@@ -304,7 +304,7 @@ namespace NotationCalculator
             return resultStringBuilder.ToString();
         }
 
-        private int Compare(string firstDigit, string secondDigit)
+        public int Compare(string firstDigit, string secondDigit)
         {
             TrimZeros(ref firstDigit);
             TrimZeros(ref secondDigit);
@@ -546,6 +546,13 @@ namespace NotationCalculator
             int ch2Decimal = GetDecimalFromChar(ch2);
 
             return GetCharFromDecimal(ch1Decimal + ch2Decimal);
+        }
+
+        private void SwapStrings(ref string str1, ref string str2)
+        {
+            string tmp = str1;
+            str1 = str2;
+            str2 = tmp;
         }
     }
 }

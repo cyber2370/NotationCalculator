@@ -6,20 +6,21 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string binaryNumber1 = "614", binaryNumber2 = "44";
+            string number1 = "-100", number2 = "-200";
+            int notation = 10;
+            
+            string sumOperation = $"{number1} + {number2}";
+            Console.WriteLine($"Get Sum: {sumOperation} = {MathExecutor.Execute(sumOperation, notation)}\n\n");
 
-            var calc = new NotationCalculator(10, binaryNumber1, binaryNumber2);
+            string substractOperation = $"{number1} - {number2}";
+            Console.WriteLine($"Get Substract: {substractOperation} = {MathExecutor.Execute(substractOperation, notation)}\n\n");
 
-            Console.WriteLine($"Get Sum: {binaryNumber1} + {binaryNumber2} = {calc.GetSum()}");
-            Console.WriteLine();
+            string multiplicationOperation = $"{number1} * {number2}";
+            Console.WriteLine($"Get Multiply: {multiplicationOperation} = {MathExecutor.Execute(multiplicationOperation, notation)}\n\n");
 
-            Console.WriteLine($"Get Multiply: {binaryNumber1} * {binaryNumber2} = {calc.GetMultiply()}");
-            Console.WriteLine();
+            string divideOperation = $"{number1} / {number2}";
+            Console.WriteLine($"Get Division: {divideOperation} = {MathExecutor.Execute(divideOperation, notation)}\n\n");
 
-            Console.WriteLine($"Get Subtraction: {binaryNumber1} - {binaryNumber2} = {calc.GetSubtraction()}");
-            Console.WriteLine();
-
-            Console.WriteLine($"Get Division: {binaryNumber1} / {binaryNumber2} = {calc.GetDivision()}");
             Console.ReadLine();
         }
     }

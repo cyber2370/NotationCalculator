@@ -6,8 +6,8 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string number1 = "-100", number2 = "-200";
-            int notation = 10;
+            string number1 = "10", number2 = "100";
+            int notation = 16;
             
             string sumOperation = $"{number1} + {number2}";
             Console.WriteLine($"Get Sum: {sumOperation} = {MathExecutor.Execute(sumOperation, notation)}\n\n");

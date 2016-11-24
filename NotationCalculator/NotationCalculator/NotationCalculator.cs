@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NotationCalculator
 {
@@ -13,8 +8,8 @@ namespace NotationCalculator
     {
         private readonly int _notation;
 
-        private string _firstDigit;
-        private string _secondDigit;
+        private readonly string _firstDigit;
+        private readonly string _secondDigit;
 
         public NotationCalculator(int notation, string firstDigit, string secondDigit)
         {
@@ -45,9 +40,9 @@ namespace NotationCalculator
             string firstDigit = _firstDigit.Replace(".", "");
             string secondDigit = _secondDigit.Replace(".", "");
 
-            int digitsAfterFloatingPoint = 
-                GetDigitsAfterFloatingPoint(_firstDigit)
-              + GetDigitsAfterFloatingPoint(_secondDigit);
+            int digitsAfterFloatingPoint =
+                GetNumberOfDigitsAfterFloatingPoint(_firstDigit)
+                + GetNumberOfDigitsAfterFloatingPoint(_secondDigit);
 
             for (int i = secondDigit.Length - 1; i >= 0; i--)
             {
@@ -61,8 +56,8 @@ namespace NotationCalculator
 
                     int resultOfMultiple = currentValueOfFirst*currentValueOfSecond + toNextDigit;
 
-                    toNextDigit = Convert.ToInt32( (resultOfMultiple/_notation)^0 );
-                    int toCurrentDigit = resultOfMultiple - toNextDigit * _notation;
+                    toNextDigit = Convert.ToInt32((resultOfMultiple/_notation) ^ 0);
+                    int toCurrentDigit = resultOfMultiple - toNextDigit*_notation;
 
                     //to current digit
                     tempResult = GetCharFromDecimal(toCurrentDigit) + tempResult;
@@ -85,15 +80,15 @@ namespace NotationCalculator
             {
                 result = new StringBuilder(result).Insert(result.Length - digitsAfterFloatingPoint, ".").ToString();
             }
-            
+
             return TrimZeros(ref result);
         }
 
         public string GetDivision()
         {
-            string result      = "",
-                   firstDigit  = _firstDigit, 
-                   secondDigit = _secondDigit;
+            string result = "",
+                firstDigit = _firstDigit,
+                secondDigit = _secondDigit;
 
             /*Console.WriteLine($"Start dividing {firstDigit} by {secondDigit};\n" +
                               $"----------------------------\n\n");
@@ -104,7 +99,7 @@ namespace NotationCalculator
                               $"{nameof(secondDigit)}: {secondDigit}\n" +
                               $"----------------------------");*/
 
-            SetupDigitsForDivision(ref firstDigit, ref secondDigit);
+            SetuFractionalPartForDivision(ref firstDigit, ref secondDigit);
 
             /*Console.WriteLine($"----** (After) Setup Digits For Division **----\n" +
                               $"{nameof(firstDigit)}: {firstDigit}\n" +
@@ -178,7 +173,7 @@ namespace NotationCalculator
                 /*Console.WriteLine($"-----** (After) Continue create part of dividend **-----\n" +
                                   $"{nameof(result)}: {result};\n" +
                                   $"{nameof(dividendPart)}: {dividendPart}\n\n");*/
-                
+
                 int toCurrentDigit = 0;
                 /*Console.WriteLine($"-----** (Before) Get Modulo (dividendPart >= secondDigit) **-----\n" +
                                   $"{nameof(toCurrentDigit)}: {toCurrentDigit}\n" +
@@ -236,7 +231,8 @@ namespace NotationCalculator
             bool isNextDigitOccupied = false;
             for (int i = firstDigitWithoutFloatPoint.Length - 1; i >= 0; i--)
             {
-                int currentDigitValue1 = GetDecimalFromChar(firstDigitWithoutFloatPoint[i]) - (isNextDigitOccupied ? 1 : 0);
+                int currentDigitValue1 = GetDecimalFromChar(firstDigitWithoutFloatPoint[i]) -
+                                         (isNextDigitOccupied ? 1 : 0);
                 int currentDigitValue2 = GetDecimalFromChar(secondDigitWithoutFloatPoint[i]);
 
                 isNextDigitOccupied = false;
@@ -278,9 +274,9 @@ namespace NotationCalculator
 
                 int tmpResult = currentValueFromSecondNumber + currentValueFromResult;
 
-                if (tmpResult /_notation >= 1)
+                if (tmpResult/_notation >= 1)
                 {
-                    nextDigitValue = Convert.ToInt32(Math.Floor((double) tmpResult / _notation));
+                    nextDigitValue = Convert.ToInt32(Math.Floor((double) tmpResult/_notation));
                     tmpResult = tmpResult%_notation;
                 }
 
@@ -288,7 +284,8 @@ namespace NotationCalculator
 
                 if (i != 0)
                 {
-                    resultStringBuilder[i - 1] = GetCharSum(resultStringBuilder[i - 1], GetCharFromDecimal(nextDigitValue));
+                    resultStringBuilder[i - 1] = GetCharSum(resultStringBuilder[i - 1],
+                        GetCharFromDecimal(nextDigitValue));
                 }
                 else
                 {
@@ -304,8 +301,18 @@ namespace NotationCalculator
             return resultStringBuilder.ToString();
         }
 
-        public int Compare(string firstDigit, string secondDigit)
+        public int Compare(string firstDigit = "", string secondDigit = "")
         {
+            if (firstDigit.Length == 0)
+            {
+                firstDigit = _firstDigit;
+            }
+
+            if (secondDigit.Length == 0)
+            {
+                secondDigit = _secondDigit;
+            }
+
             TrimZeros(ref firstDigit);
             TrimZeros(ref secondDigit);
 
@@ -362,40 +369,9 @@ namespace NotationCalculator
 
         private void SetupDigits(ref string firstDigit, ref string secondDigit)
         {
-            SetupLengthOfNumbers(ref firstDigit, ref secondDigit);
-            
-            SetupFloatingPoint(ref firstDigit, ref secondDigit);
-        }
+            AlignRealPart(ref firstDigit, ref secondDigit);
 
-        private void SetupDigitsForDivision(ref string firstNumber, ref string secondNumber)
-        {
-            firstNumber = TrimZeros(ref firstNumber);
-            secondNumber = TrimZeros(ref secondNumber);
-
-            var realAndFractionalPartsOfFirstNumber = firstNumber.Split('.');
-            var realAndFractionalPartsOfSecondNumber = secondNumber.Split('.');
-
-            int numbersLengthAfterFractionalPointOfFirstNumber = 
-                realAndFractionalPartsOfFirstNumber.Length > 1 ? realAndFractionalPartsOfFirstNumber[1].Length : 0;
-            int numbersLengthAfterFractionalPointOfSecondNumber = 
-                realAndFractionalPartsOfSecondNumber.Length > 1 ? realAndFractionalPartsOfSecondNumber[1].Length : 0;
-
-            int difference = 
-                numbersLengthAfterFractionalPointOfFirstNumber - numbersLengthAfterFractionalPointOfSecondNumber;
-
-            firstNumber = firstNumber.Replace(".", "");
-            secondNumber = secondNumber.Replace(".", "");
-
-            if (difference > 0)
-            {
-                for (int i = 0; i < difference; i++)
-                    secondNumber += "0";
-            }
-            else if (difference < 0)
-            {
-                for (int i = 0; i > difference; i--)
-                    firstNumber += "0";
-            }
+            AlignFractionalPart(ref firstDigit, ref secondDigit);
         }
 
         private string TrimZeros(ref string number)
@@ -414,7 +390,7 @@ namespace NotationCalculator
             return number;
         }
 
-        private void SetupLengthOfNumbers(ref string firstDigit, ref string secondDigit)
+        private void AlignRealPart(ref string firstDigit, ref string secondDigit)
         {
             string realPartOfFirst = firstDigit.Split('.')[0];
             string realPartOfSecond = secondDigit.Split('.')[0];
@@ -436,7 +412,38 @@ namespace NotationCalculator
             }
         }
 
-        private void SetupFloatingPoint(ref string firstDigit, ref string secondDigit)
+        private void SetuFractionalPartForDivision(ref string firstNumber, ref string secondNumber)
+        {
+            firstNumber = TrimZeros(ref firstNumber);
+            secondNumber = TrimZeros(ref secondNumber);
+
+            var realAndFractionalPartsOfFirstNumber = firstNumber.Split('.');
+            var realAndFractionalPartsOfSecondNumber = secondNumber.Split('.');
+
+            int numbersLengthAfterFractionalPointOfFirstNumber =
+                realAndFractionalPartsOfFirstNumber.Length > 1 ? realAndFractionalPartsOfFirstNumber[1].Length : 0;
+            int numbersLengthAfterFractionalPointOfSecondNumber =
+                realAndFractionalPartsOfSecondNumber.Length > 1 ? realAndFractionalPartsOfSecondNumber[1].Length : 0;
+
+            int difference =
+                numbersLengthAfterFractionalPointOfFirstNumber - numbersLengthAfterFractionalPointOfSecondNumber;
+
+            firstNumber = firstNumber.Replace(".", "");
+            secondNumber = secondNumber.Replace(".", "");
+
+            if (difference > 0)
+            {
+                for (int i = 0; i < difference; i++)
+                    secondNumber += "0";
+            }
+            else if (difference < 0)
+            {
+                for (int i = 0; i > difference; i--)
+                    firstNumber += "0";
+            }
+        }
+
+        private void AlignFractionalPart(ref string firstDigit, ref string secondDigit)
         {
             string[] splittedFirstNumber = firstDigit.Split('.');
             string[] splittedSecondNumber = secondDigit.Split('.');
@@ -449,7 +456,8 @@ namespace NotationCalculator
                 if (firstNumberFloatPart.Length > secondNumberFloatPart.Length)
                 {
                     for (int i = 0, diff = firstNumberFloatPart.Length - secondNumberFloatPart.Length;
-                        i < diff; i++)
+                        i < diff;
+                        i++)
                     {
                         secondDigit += "0";
                     }
@@ -457,7 +465,8 @@ namespace NotationCalculator
                 else
                 {
                     for (int i = 0, diff = secondNumberFloatPart.Length - firstNumberFloatPart.Length;
-                        i < diff; i++)
+                        i < diff;
+                        i++)
                     {
                         firstDigit += "0";
                     }
@@ -483,7 +492,7 @@ namespace NotationCalculator
             }
         }
 
-        private int GetDigitsAfterFloatingPoint()
+        /*private int GetDigitsAfterFloatingPoint()
         {
             int numberOfDigitsAfterFloatingPoint1 = 0, 
                 numberOfDigitsAfterFloatingPoint2 = 0;
@@ -501,9 +510,9 @@ namespace NotationCalculator
             return numberOfDigitsAfterFloatingPoint1 > numberOfDigitsAfterFloatingPoint2
                 ? numberOfDigitsAfterFloatingPoint1
                 : numberOfDigitsAfterFloatingPoint2;
-        }
+        }*/
 
-        private int GetDigitsAfterFloatingPoint(string number)
+        private int GetNumberOfDigitsAfterFloatingPoint(string number)
         {
             if (number.Contains("."))
             {
@@ -515,8 +524,8 @@ namespace NotationCalculator
 
         private int GetMaxDigitsAfterFloatingPoint(string firstDigit, string secondDigit)
         {
-            int numberOfDigitsAfterFloatingPoint1 = GetDigitsAfterFloatingPoint(firstDigit),
-                numberOfDigitsAfterFloatingPoint2 = GetDigitsAfterFloatingPoint(secondDigit);
+            int numberOfDigitsAfterFloatingPoint1 = GetNumberOfDigitsAfterFloatingPoint(firstDigit),
+                numberOfDigitsAfterFloatingPoint2 = GetNumberOfDigitsAfterFloatingPoint(secondDigit);
 
             return numberOfDigitsAfterFloatingPoint1 > numberOfDigitsAfterFloatingPoint2
                 ? numberOfDigitsAfterFloatingPoint1
@@ -535,8 +544,8 @@ namespace NotationCalculator
 
         private char GetCharFromDecimal(int number)
         {
-            return number < 10 
-                ? Convert.ToChar(number.ToString()) 
+            return number < 10
+                ? Convert.ToChar(number.ToString())
                 : Convert.ToChar(65 + number - 10);
         }
 

@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NotationCalculator
 {
     public static class NotationConverter
     {
-        private static readonly string[] _binaryValues;
+        private static readonly string[] BinaryValues;
 
         static NotationConverter()
         {
-            _binaryValues = new string[]
+            BinaryValues = new string[]
             {
                 "000000", "000001", "000010", "000011", "000100", "000101", "000110", "000111",
                 "001000", "001001", "001010", "001011", "001100", "001101", "001110", "001111",
                 "010000", "010001", "010010", "010011", "010100", "010101", "010110", "010111",
                 "011000", "011001", "011010", "011011", "011100", "011101", "011110", "011111",
-
                 "100000", "100001", "100010", "100011", "100100", "100101", "100110", "100111",
                 "101000", "101001", "101010", "101011", "101100", "101101", "101110", "101111",
                 "110000", "110001", "110010", "110011", "110100", "110101", "110110", "110111",
@@ -26,7 +22,51 @@ namespace NotationCalculator
             };
         }
 
-        public static string ConvertToBinaryNotation(this string number, int notation)
+        public static string ConvertToAnyNotation(this string number, int fromNotation, int toNotation)
+        {
+            string result = "";
+
+            string fractionalPart = "";
+            string binaryNumber = "";
+
+            if (number.Contains("."))
+            {
+                var tmpArr = number.Split('.');
+
+                fractionalPart = ConvertFractionalPart(tmpArr[0], toNotation);
+            }
+            else
+            {
+                binaryNumber = ConvertToBinaryNotation(number, fromNotation);
+            }
+
+
+            if (toNotation == 10)
+            {
+                return ConvertFromBinaryToDecimal(binaryNumber).ToString();
+            }
+
+            int numberOfDigitsPerElement = FindNumberOfBinaryDigitsPerSourceDigit(toNotation);
+            string[] binaryValues = BinaryValues
+                .Take(Convert.ToInt32(Math.Pow(2, numberOfDigitsPerElement)))
+                .Select(x => x.Remove(0, x.Length - numberOfDigitsPerElement))
+                .ToArray();
+
+            binaryNumber = ComplementBinaryToFullNotation(binaryNumber, numberOfDigitsPerElement);
+
+            while (binaryNumber.Length != 0)
+            {
+                string entry = string.Join("", binaryNumber.Take(numberOfDigitsPerElement));
+                binaryNumber = binaryNumber.Remove(0, numberOfDigitsPerElement);
+
+                int index = Array.IndexOf(binaryValues, entry);
+                result += index < 10 ? index.ToString() : Convert.ToChar(65 + (index - 10)).ToString();
+            }
+
+            return result;
+        }
+
+        private static string ConvertToBinaryNotation(this string number, int notation)
         {
             if (notation == 2)
             {
@@ -38,8 +78,8 @@ namespace NotationCalculator
                 return ConvertFromDecimalToBinary(Convert.ToInt32(number));
             }
 
-            int numberOfDigitsPerElement = FindNumberOfDigitsPerElement(notation);
-            string[] binaryValues = _binaryValues
+            int numberOfDigitsPerElement = FindNumberOfBinaryDigitsPerSourceDigit(notation);
+            string[] binaryValues = BinaryValues
                 .Take(Convert.ToInt32(Math.Pow(2, numberOfDigitsPerElement)))
                 .Select(x => x.Remove(0, x.Length - numberOfDigitsPerElement))
                 .ToArray();
@@ -59,37 +99,6 @@ namespace NotationCalculator
                 }
 
                 result += binaryValues[binaryArrayIndex];
-            }
-
-            return result;
-        }
-
-        public static string ConvertToAnyNotation(this string number, int fromNotation, int toNotation)
-        {
-            string result = "";
-
-            string binaryNumber = ConvertToBinaryNotation(number, fromNotation);
-
-            if (toNotation == 10)
-            {
-                return ConvertFromBinaryToDecimal(binaryNumber).ToString();
-            }
-
-            int numberOfDigitsPerElement = FindNumberOfDigitsPerElement(toNotation);
-            string[] binaryValues = _binaryValues
-                .Take(Convert.ToInt32(Math.Pow(2, numberOfDigitsPerElement)))
-                .Select(x => x.Remove(0, x.Length - numberOfDigitsPerElement))
-                .ToArray();
-
-            binaryNumber = ComplementBinaryToFullNotation(binaryNumber, numberOfDigitsPerElement);
-
-            while (binaryNumber.Length != 0)
-            {
-                string entry = string.Join("", binaryNumber.Take(numberOfDigitsPerElement));
-                binaryNumber = binaryNumber.Remove(0, numberOfDigitsPerElement);
-
-                int index = Array.IndexOf(binaryValues, entry);
-                result += index < 10 ? index.ToString() : Convert.ToChar(65 + (index - 10)).ToString();
             }
 
             return result;
@@ -121,7 +130,7 @@ namespace NotationCalculator
 
             while (decimalNumber != 0)
             {
-                if (decimalNumber % 2 == 1)
+                if (decimalNumber%2 == 1)
                 {
                     result += "1";
                     decimalNumber--;
@@ -141,7 +150,7 @@ namespace NotationCalculator
             string binary,
             int numberOfDigitsPerElement)
         {
-            int modulo = binary.Length % numberOfDigitsPerElement;
+            int modulo = binary.Length%numberOfDigitsPerElement;
 
             if (modulo == 0)
                 return binary;
@@ -156,14 +165,53 @@ namespace NotationCalculator
             return binary;
         }
 
-        private static int FindNumberOfDigitsPerElement(int notation)
+        private static int FindNumberOfBinaryDigitsPerSourceDigit(int notation)
         {
             int value, powerCounter;
 
             for (value = 2, powerCounter = 1; value < notation; value *= 2, powerCounter++)
-            { }
+            {
+            }
 
             return powerCounter;
+        }
+
+        private static string ConvertFractionalPart(string fractionalPart, int notation)
+        {
+            string result = "";
+
+            for (int i = 0; i < 10; i++)
+            {
+                var mc = new NotationCalculator(notation, "0." + fractionalPart, notation.ToString());
+
+                fractionalPart = mc.GetMultiply();
+
+                if (Compare(fractionalPart, 1.ToString(), notation) == -1)
+                {
+                    result += "0";
+                }
+                else
+                {
+                    var tmpArr = fractionalPart.Split('.');
+                    result += tmpArr[0];
+
+                    if (tmpArr.Length == 1)
+                    {
+                        break;
+                    }
+
+                    fractionalPart = tmpArr[1];
+                }
+            }
+
+            return "." + result;
+        }
+
+        private static int Compare(string first, string second, int notation)
+        {
+            var nc = new NotationCalculator(notation, first, second);
+
+            return nc.Compare();
         }
     }
 }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace NotationCalculator
 {
-    internal class Number
+    public class Number
     {
         private string _value;
 
@@ -22,18 +17,36 @@ namespace NotationCalculator
             get { return _value; }
             set
             {
+                if (value == "")
+                {
+                    _value = "0";
+                    IsNegative = false;
+                    return;
+
+                }
+
                 IsNegative = value.Contains('-');
 
                 _value = value.Replace("-", "").TrimStart(' ', '0');
+
+                if (_value.Length > 0 && _value[0] == '.')
+                {
+                    _value = "0" + _value;
+                }
             }
         }
 
         public bool IsNegative { get; private set; }
 
         public int Notation { get; set; }
+
+        public override string ToString()
+        {
+            return IsNegative ? ("-" + Value) : Value;
+        }
     }
 
-    internal enum MathOperations
+    public enum MathOperations
     {
         Addition,
         Subtraction,
@@ -43,56 +56,25 @@ namespace NotationCalculator
 
     public class MathExecutor
     {
-        private static string _operation;
         private static int _notation;
 
-        public MathExecutor(string operation, int notation)
+        public MathExecutor(int notation)
         {
-            _operation = operation.Trim(' ');
             _notation = notation;
         }
 
-        public static string Execute(string operation, int notation)
+        public static Number Execute(Number num1, Number num2, MathOperations operation)
         {
-            _operation = operation;
-            _notation = notation;
+            _notation = num1.Notation;
+            if (num1.Notation != num2.Notation)
+            {
+                var newNum2AbsoluteValue =  (num2.IsNegative ? "-" : "") 
+                    + num2.Value.ConvertToAnyNotation(num2.Notation, num1.Notation);
 
-            Number num1, num2;
-            MathOperations mathOperation;
-            string splitString;
-
-            if (_operation.IndexOf(" * ") != -1)
-            {
-                mathOperation = MathOperations.Multiplication;
-                splitString = " * ";
-            }
-            else if (_operation.IndexOf(" / ") != -1)
-            {
-                mathOperation = MathOperations.Division;
-                splitString = " / ";
-            }
-            else if (_operation.IndexOf(" + ") != -1)
-            {
-                mathOperation = MathOperations.Addition;
-                splitString = " + ";
-            }
-            else if (_operation.IndexOf(" - ") != -1)
-            {
-                mathOperation = MathOperations.Subtraction;
-                splitString = " - ";
-            }
-            else
-            {
-                return "Can not resolve operation.\n\n";
+                num2 = new Number(newNum2AbsoluteValue, _notation);
             }
 
-            int index = _operation.IndexOf(splitString);
-            var oper = _operation.Replace(splitString, "");
-
-            num1 = new Number(oper.Substring(0, index).TrimStart(), _notation);
-            num2 = new Number(oper.Substring(index).TrimStart(), _notation);
-
-            return ResolveOperation(num1, num2, mathOperation);
+            return new Number(ResolveOperation(num1, num2, operation), _notation);
         }
 
         private static string ResolveOperation(Number num1, Number num2, MathOperations mathOperation)

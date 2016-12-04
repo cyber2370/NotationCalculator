@@ -6,20 +6,20 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            string number1 = "10", number2 = "100";
-            int notation = 16;
+            Number num1 = new Number("100.2333", 8),
+                num2 = new Number("A.11A5", 16);
             
-            string sumOperation = $"{number1} + {number2}";
-            Console.WriteLine($"Get Sum: {sumOperation} = {MathExecutor.Execute(sumOperation, notation)}\n\n");
+            string sumOperation = $"{num1}(notation: {num1.Notation}) + {num2}(notation: {num2.Notation})";
+            Console.WriteLine($"Get Sum: {sumOperation} = {MathExecutor.Execute(num1, num2, MathOperations.Addition)}\n\n");
 
-            string substractOperation = $"{number1} - {number2}";
-            Console.WriteLine($"Get Substract: {substractOperation} = {MathExecutor.Execute(substractOperation, notation)}\n\n");
+            string substractOperation = $"{num1}(notation: {num1.Notation}) - {num2}(notation: {num2.Notation})";
+            Console.WriteLine($"Get Substract: {substractOperation} = {MathExecutor.Execute(num1, num2, MathOperations.Subtraction)}\n\n");
 
-            string multiplicationOperation = $"{number1} * {number2}";
-            Console.WriteLine($"Get Multiply: {multiplicationOperation} = {MathExecutor.Execute(multiplicationOperation, notation)}\n\n");
+            string multiplicationOperation = $"{num1}(notation: {num1.Notation}) * {num2}(notation: {num2.Notation})";
+            Console.WriteLine($"Get Multiply: {multiplicationOperation} = {MathExecutor.Execute(num1, num2, MathOperations.Multiplication)}\n\n");
 
-            string divideOperation = $"{number1} / {number2}";
-            Console.WriteLine($"Get Division: {divideOperation} = {MathExecutor.Execute(divideOperation, notation)}\n\n");
+            string divideOperation = $"{num1}(notation: {num1.Notation}) / {num2}(notation: {num2.Notation})";
+            Console.WriteLine($"Get Division: {divideOperation} = {MathExecutor.Execute(num1, num2, MathOperations.Division)}\n\n");
 
             Console.ReadLine();
         }

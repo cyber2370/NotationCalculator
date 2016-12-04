@@ -33,7 +33,7 @@ namespace NotationCalculator
             {
                 var tmpArr = number.Split('.');
 
-                fractionalPart = ConvertFractionalPart(tmpArr[0], toNotation);
+                fractionalPart = ConvertFractionalPart(tmpArr[1], fromNotation, toNotation);
             }
             else
             {
@@ -63,7 +63,7 @@ namespace NotationCalculator
                 result += index < 10 ? index.ToString() : Convert.ToChar(65 + (index - 10)).ToString();
             }
 
-            return result;
+            return result + fractionalPart;
         }
 
         private static string ConvertToBinaryNotation(this string number, int notation)
@@ -176,13 +176,48 @@ namespace NotationCalculator
             return powerCounter;
         }
 
-        private static string ConvertFractionalPart(string fractionalPart, int notation)
+        private static string ConvertFractionalPart(string fractional, int from, int to)
+        {
+            if (from == to)
+            {
+                return "." + fractional;
+            }
+
+            if (to == 10)
+            {
+                return "." + ConvertToDecimalFractionalPart(fractional, from);
+            }
+
+            if (from == 10)
+            {
+                return "." + ConvertDecimalFractionalPart(fractional, to);
+            }
+
+            var decimalFract = ConvertToDecimalFractionalPart(fractional, from);
+            return "." + ConvertDecimalFractionalPart(decimalFract, to);
+        }
+
+        private static string ConvertToDecimalFractionalPart(string fractionalPart, int notation)
+        {
+            double result = 0;
+
+            for (int i = 0; i < 20 && i < fractionalPart.Length; i++)
+            {
+                result += GetDecimalFromChar(fractionalPart[i]) / Math.Pow(notation, i + 1);
+            }
+            var tmpArr = result.ToString().Replace(",", ".").Split('.');
+
+            return tmpArr[1];
+        }
+
+        private static string ConvertDecimalFractionalPart(string fractionalPart, int notation)
         {
             string result = "";
+            fractionalPart = "0." + fractionalPart;
 
             for (int i = 0; i < 10; i++)
             {
-                var mc = new NotationCalculator(notation, "0." + fractionalPart, notation.ToString());
+                var mc = new NotationCalculator(notation, fractionalPart, notation.ToString());
 
                 fractionalPart = mc.GetMultiply();
 
@@ -212,6 +247,23 @@ namespace NotationCalculator
             var nc = new NotationCalculator(notation, first, second);
 
             return nc.Compare();
+        }
+
+        private static int GetDecimalFromChar(char ch)
+        {
+            if (char.IsDigit(ch))
+            {
+                return Convert.ToInt32(ch.ToString());
+            }
+
+            return ch - 65 + 10;
+        }
+
+        private static char GetCharFromDecimal(int number)
+        {
+            return number < 10
+                ? Convert.ToChar(number.ToString())
+                : Convert.ToChar(65 + number - 10);
         }
     }
 }

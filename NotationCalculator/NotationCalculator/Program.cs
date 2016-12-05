@@ -6,8 +6,8 @@ namespace NotationCalculator
     {
         static void Main(string[] args)
         {
-            Number num1 = new Number("100.2333", 8),
-                num2 = new Number("A.11A5", 16);
+            Number num1 = new Number("A.11A5", 16),
+                num2 = new Number("100", 8);
             
             string sumOperation = $"{num1}(notation: {num1.Notation}) + {num2}(notation: {num2.Notation})";
             Console.WriteLine($"Get Sum: {sumOperation} = {MathExecutor.Execute(num1, num2, MathOperations.Addition)}\n\n");

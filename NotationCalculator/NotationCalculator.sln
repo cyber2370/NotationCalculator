@@ -5,6 +5,11 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotationCalculator", "NotationCalculator\NotationCalculator.csproj", "{DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotCalcWinForms", "NotCalcWinForms\NotCalcWinForms.csproj", "{88E12B69-F9B0-4D21-8087-6ED02AFD668D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC} = {DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA0E73B9-F66D-462D-BB7B-3E413E1C6EFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88E12B69-F9B0-4D21-8087-6ED02AFD668D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E12B69-F9B0-4D21-8087-6ED02AFD668D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E12B69-F9B0-4D21-8087-6ED02AFD668D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E12B69-F9B0-4D21-8087-6ED02AFD668D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

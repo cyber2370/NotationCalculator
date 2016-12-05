@@ -22,7 +22,10 @@ namespace NotationCalculator
 
         public string GetSum()
         {
-            string result = GetSum(_firstDigit, _secondDigit);
+            string f = _firstDigit, s = _secondDigit;
+            SetupDigits(ref f, ref s);
+
+            string result = GetSum(f, s);
 
             return TrimZeros(ref result);
         }
@@ -261,6 +264,8 @@ namespace NotationCalculator
 
         private string GetSum(string firstDigit, string secondDigit)
         {
+            SetupDigits(ref firstDigit, ref secondDigit);
+
             StringBuilder resultStringBuilder = new StringBuilder(firstDigit.Replace(".", ""));
             secondDigit = secondDigit.Replace(".", "");
 
@@ -313,27 +318,16 @@ namespace NotationCalculator
                 secondDigit = _secondDigit;
             }
 
-            TrimZeros(ref firstDigit);
-            TrimZeros(ref secondDigit);
-
             if (firstDigit == secondDigit)
             {
                 return 0;
             }
 
+            AlignRealPart(ref firstDigit, ref secondDigit);
+
             string[] firstArr = firstDigit.Split('.');
             string[] secondArr = secondDigit.Split('.');
-
-            if (firstArr[0].Length > secondArr[0].Length)
-            {
-                return -1;
-            }
-
-            if (firstArr[0].Length < secondArr[0].Length)
-            {
-                return 1;
-            }
-
+            
             for (int i = 0; i < firstArr[0].Length; i++)
             {
                 var firstCurrentCharValue = GetDecimalFromChar(firstArr[0][i]);
@@ -348,7 +342,6 @@ namespace NotationCalculator
 
             if (firstArr.Length > secondArr.Length)
                 return -1;
-
             if (firstArr.Length < secondArr.Length)
                 return 1;
 
@@ -363,6 +356,9 @@ namespace NotationCalculator
                 if (firstCurrentCharValue < secondCurrentCharValue)
                     return 1;
             }
+
+            if (firstArr[1].Length == secondArr[1].Length)
+                return 0;
 
             return firstArr[1].Length > secondArr[1].Length ? -1 : 1;
         }
@@ -386,7 +382,7 @@ namespace NotationCalculator
                 fractionalPart = "." + arr[1].TrimEnd('0', ' ');
             }
 
-            number = (realPart.Length > 0 ? realPart : "0") + fractionalPart;
+            number = (realPart.Length > 0 ? realPart : "0") + (fractionalPart.Any(x => x != '.') ? fractionalPart : "");
             return number;
         }
 

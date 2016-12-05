@@ -15,6 +15,7 @@ namespace NotationCalculator
                 "001000", "001001", "001010", "001011", "001100", "001101", "001110", "001111",
                 "010000", "010001", "010010", "010011", "010100", "010101", "010110", "010111",
                 "011000", "011001", "011010", "011011", "011100", "011101", "011110", "011111",
+
                 "100000", "100001", "100010", "100011", "100100", "100101", "100110", "100111",
                 "101000", "101001", "101010", "101011", "101100", "101101", "101110", "101111",
                 "110000", "110001", "110010", "110011", "110100", "110101", "110110", "110111",
@@ -27,23 +28,24 @@ namespace NotationCalculator
             string result = "";
 
             string fractionalPart = "";
-            string binaryNumber = "";
+            string binaryRealNumberPart = "";
 
             if (number.Contains("."))
             {
                 var tmpArr = number.Split('.');
 
+                binaryRealNumberPart = ConvertToBinaryNotation(tmpArr[0], fromNotation);
                 fractionalPart = ConvertFractionalPart(tmpArr[1], fromNotation, toNotation);
             }
             else
             {
-                binaryNumber = ConvertToBinaryNotation(number, fromNotation);
+                binaryRealNumberPart = ConvertToBinaryNotation(number, fromNotation);
             }
 
 
             if (toNotation == 10)
             {
-                return ConvertFromBinaryToDecimal(binaryNumber).ToString();
+                return ConvertFromBinaryToDecimal(binaryRealNumberPart).ToString();
             }
 
             int numberOfDigitsPerElement = FindNumberOfBinaryDigitsPerSourceDigit(toNotation);
@@ -52,12 +54,12 @@ namespace NotationCalculator
                 .Select(x => x.Remove(0, x.Length - numberOfDigitsPerElement))
                 .ToArray();
 
-            binaryNumber = ComplementBinaryToFullNotation(binaryNumber, numberOfDigitsPerElement);
+            binaryRealNumberPart = ComplementBinaryToFullNotation(binaryRealNumberPart, numberOfDigitsPerElement);
 
-            while (binaryNumber.Length != 0)
+            while (binaryRealNumberPart.Length != 0)
             {
-                string entry = string.Join("", binaryNumber.Take(numberOfDigitsPerElement));
-                binaryNumber = binaryNumber.Remove(0, numberOfDigitsPerElement);
+                string entry = string.Join("", binaryRealNumberPart.Take(numberOfDigitsPerElement));
+                binaryRealNumberPart = binaryRealNumberPart.Remove(0, numberOfDigitsPerElement);
 
                 int index = Array.IndexOf(binaryValues, entry);
                 result += index < 10 ? index.ToString() : Convert.ToChar(65 + (index - 10)).ToString();
@@ -194,7 +196,7 @@ namespace NotationCalculator
             }
 
             var decimalFract = ConvertToDecimalFractionalPart(fractional, from);
-            return "." + ConvertDecimalFractionalPart(decimalFract, to);
+            return ConvertDecimalFractionalPart(decimalFract, to);
         }
 
         private static string ConvertToDecimalFractionalPart(string fractionalPart, int notation)
@@ -217,11 +219,11 @@ namespace NotationCalculator
 
             for (int i = 0; i < 10; i++)
             {
-                var mc = new NotationCalculator(notation, fractionalPart, notation.ToString());
+                var mc = new NotationCalculator(10, fractionalPart, notation.ToString());
 
                 fractionalPart = mc.GetMultiply();
 
-                if (Compare(fractionalPart, 1.ToString(), notation) == -1)
+                if (Compare(fractionalPart, 1.ToString(), notation) == 1)
                 {
                     result += "0";
                 }
@@ -235,7 +237,7 @@ namespace NotationCalculator
                         break;
                     }
 
-                    fractionalPart = tmpArr[1];
+                    fractionalPart = "0." + tmpArr[1];
                 }
             }
 

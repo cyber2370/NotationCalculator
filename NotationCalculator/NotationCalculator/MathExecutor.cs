@@ -29,6 +29,11 @@ namespace NotationCalculator
 
                 _value = value.Replace("-", "").TrimStart(' ', '0');
 
+                if (_value.Length == 0)
+                {
+                    _value = "0";
+                }
+
                 if (_value.Length > 0 && _value[0] == '.')
                 {
                     _value = "0" + _value;
@@ -192,6 +197,11 @@ namespace NotationCalculator
         private static string GetDivision(Number num1, Number num2)
         {
             string prefix = "";
+
+            if (num1.Value == "0")
+            {
+                return "0";
+            }
 
             if (num1.IsNegative ^ num2.IsNegative)
             {

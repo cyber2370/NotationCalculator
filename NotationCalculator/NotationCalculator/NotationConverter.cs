@@ -25,6 +25,13 @@ namespace NotationCalculator
 
         public static string ConvertToAnyNotation(this string number, int fromNotation, int toNotation)
         {
+
+
+            if (number == "0")
+            {
+                return "0";
+            }
+
             if (fromNotation == toNotation)
             {
                 return number;
@@ -75,6 +82,9 @@ namespace NotationCalculator
 
         private static string ConvertToBinaryNotation(this string number, int notation)
         {
+            if (number.ToLower() == "infinity")
+                return "0";
+
             if (notation == 2)
             {
                 return number;
@@ -82,7 +92,7 @@ namespace NotationCalculator
 
             if (notation == 10)
             {
-                return ConvertFromDecimalToBinary(Convert.ToInt32(number));
+                return ConvertFromDecimalToBinary(number.Length > 0 ? Convert.ToInt32(number) : 0);
             }
 
             int numberOfDigitsPerElement = FindNumberOfBinaryDigitsPerSourceDigit(notation);

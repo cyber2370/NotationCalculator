@@ -118,7 +118,7 @@
             this.num2_nud.Location = new System.Drawing.Point(166, 179);
             this.num2_nud.Name = "num2_nud";
             this.num2_nud.Size = new System.Drawing.Size(100, 35);
-            this.num2_nud.TabIndex = 8;
+            this.num2_nud.TabIndex = 3;
             this.num2_nud.ValueChanged += new System.EventHandler(this.num2_nud_ValueChanged);
             // 
             // num1_nud
@@ -127,7 +127,7 @@
             this.num1_nud.Location = new System.Drawing.Point(166, 81);
             this.num1_nud.Name = "num1_nud";
             this.num1_nud.Size = new System.Drawing.Size(100, 35);
-            this.num1_nud.TabIndex = 9;
+            this.num1_nud.TabIndex = 1;
             this.num1_nud.ValueChanged += new System.EventHandler(this.num1_nud_ValueChanged);
             // 
             // label5

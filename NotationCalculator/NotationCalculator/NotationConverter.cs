@@ -25,6 +25,11 @@ namespace NotationCalculator
 
         public static string ConvertToAnyNotation(this string number, int fromNotation, int toNotation)
         {
+            if (fromNotation == toNotation)
+            {
+                return number;
+            }
+
             string result = "";
 
             string fractionalPart = "";
@@ -187,12 +192,12 @@ namespace NotationCalculator
 
             if (to == 10)
             {
-                return "." + ConvertToDecimalFractionalPart(fractional, from);
+                return ConvertToDecimalFractionalPart(fractional, from);
             }
 
             if (from == 10)
             {
-                return "." + ConvertDecimalFractionalPart(fractional, to);
+                return ConvertDecimalFractionalPart(fractional, to);
             }
 
             var decimalFract = ConvertToDecimalFractionalPart(fractional, from);

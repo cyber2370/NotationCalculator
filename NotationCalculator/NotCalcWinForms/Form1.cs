@@ -81,10 +81,10 @@ namespace NotCalcWinForms
 
         private void FillDiffNotations(Number number)
         {
-            not2_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 2);
-            not8_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 8);
-            not10_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 10);
-            not16_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 16);
+            not2_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 2).TrimStart();
+            not8_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 8).TrimStart();
+            not10_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 10).TrimStart();
+            not16_lbl.Text = (number.IsNegative ? "-" : "") + number.Value.ConvertToAnyNotation(number.Notation, 16).TrimStart();
         }
 
         private void ClearFields()

@@ -50,7 +50,7 @@ namespace NotationCalculator
 
             if (toNotation == 10)
             {
-                return ConvertFromBinaryToDecimal(binaryRealNumberPart).ToString();
+                return ConvertFromBinaryToDecimal(binaryRealNumberPart) + "." + fractionalPart;
             }
 
             int numberOfDigitsPerElement = FindNumberOfBinaryDigitsPerSourceDigit(toNotation);
@@ -235,7 +235,7 @@ namespace NotationCalculator
                 else
                 {
                     var tmpArr = fractionalPart.Split('.');
-                    result += tmpArr[0];
+                    result += GetCharFromDecimal(Convert.ToInt32(tmpArr[0]));
 
                     if (tmpArr.Length == 1)
                     {
